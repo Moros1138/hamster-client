@@ -1,0 +1,3 @@
+/home/jon/Projects/Moros1138/hamster-client/build/CMakeFiles/hamster.dir
+/home/jon/Projects/Moros1138/hamster-client/build/CMakeFiles/edit_cache.dir
+/home/jon/Projects/Moros1138/hamster-client/build/CMakeFiles/rebuild_cache.dir
