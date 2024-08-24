@@ -166,8 +166,10 @@ void HamsterNet::SetName(const std::string& hamsterName)
 }
 
 void HamsterNet::InitRace()
+bool HamsterNet::SetName(const std::string& name)
 {
-
+    m_name = name;
+    return (hamsterNet__setRacerName(m_name.c_str()) == 1);
 }
 
 bool HamsterNet::StartRace(const std::string& map)
