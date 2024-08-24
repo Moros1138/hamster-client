@@ -224,6 +224,15 @@ if(UNIX AND NOT APPLE AND NOT EMSCRIPTEN)
     # dl, for miniaudio
     target_link_libraries(${OutputExecutable} dl)
 
+    # Find the libcurl package
+    find_package(CURL REQUIRED)
+
+    # Include directories
+    include_directories(${CURL_INCLUDE_DIRS})
+
+    # Link the executable with libcurl
+    target_link_libraries(${OutputExecutable} ${CURL_LIBRARIES})
+
 endif() # Linux
 
 ######################################################################
