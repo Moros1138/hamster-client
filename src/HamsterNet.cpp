@@ -82,6 +82,7 @@ EM_JS(int, hamsterNet__startRace, (), {
         })    
     });
 });
+
 EM_JS(int, hamsterNet__finishRace, (const char* raceMap, const char* raceColor, int raceTime), {
     
     if(Module.hamsterRaceId === undefined)
@@ -152,20 +153,19 @@ extern "C"
 }
 #endif
 
-void HamsterNet::SetColor(const std::string& hamsterColor)
 HamsterNet::HamsterNet()
 { }
+
+bool HamsterNet::InitSession()
 {
-    this->hamsterColor = hamsterColor;
+    return (hamsterNet__initSession() == 1);
 }
 
-void HamsterNet::SetName(const std::string& hamsterName)
+void HamsterNet::SetColor(const std::string& hamsterColor)
 {
-    this->hamsterName = hamsterName;
-
+    m_color = hamsterColor;
 }
 
-void HamsterNet::InitRace()
 bool HamsterNet::SetName(const std::string& name)
 {
     m_name = name;
