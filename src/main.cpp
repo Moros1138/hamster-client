@@ -11,17 +11,8 @@ public:
 
 public:
 
-    bool OnUserCreate() override
-    {
-        return true;
-    }
-    
     HamsterNet hamsterNet;
-
-    bool OnUserDestroy() override
-    {
-        return true;
-    }
+    std::vector<LeaderboardEntry> map1;
 
     enum State : uint8_t {
         Init = 0,
@@ -32,13 +23,31 @@ public:
     };
 
     State state = State::Init;
-    std::string text = "";
     
+    std::string text = "";
+
+    bool OnUserCreate() override
+    {
+        return true;
+    }
+
+    bool OnUserDestroy() override
+    {
+        return true;
+    }
+
     bool OnUserUpdate(float fElapsedTime) override
     {
         Clear(olc::BLACK);
-        
-        
+
+        if(GetKey(olc::A).bPressed)
+        {
+            map1 = hamsterNet.GetLeaderboard("map1");
+            for(auto &entry : map1)
+            {
+                std::cout << entry.name << " " << entry.color << " " << entry.time << "\n";
+            }
+        }
 
         if(GetKey(olc::R).bPressed)
         {
