@@ -170,9 +170,7 @@ void HamsterNet::InitRace()
 
 }
 
-void HamsterNet::StopRace()
 {
-
 }
 
 bool HamsterNet::FinishRace()
