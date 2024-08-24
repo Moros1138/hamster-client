@@ -235,6 +235,7 @@ bool HamsterNet::FinishRace()
 
     return (hamsterNet__finishRace(m_map.c_str(), m_color.c_str(), m_time) == 1);
 }
+
 std::vector<LeaderboardEntry> HamsterNet::GetLeaderboard(const std::string& map, const int offset, const int limit, const std::string& sortBy, bool ascending)
 {
     std::vector<LeaderboardEntry> leaderboard;
