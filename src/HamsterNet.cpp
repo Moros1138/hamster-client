@@ -1,4 +1,5 @@
 #include <HamsterNet.h>
+#include <json.hpp>
 
 #ifdef __EMSCRIPTEN__
 
@@ -233,4 +234,55 @@ bool HamsterNet::FinishRace()
     m_time = static_cast<int>(duration.count());
 
     return (hamsterNet__finishRace(m_map.c_str(), m_color.c_str(), m_time) == 1);
+}
+std::vector<LeaderboardEntry> HamsterNet::GetLeaderboard(const std::string& map, const int offset, const int limit, const std::string& sortBy, bool ascending)
+{
+    std::vector<LeaderboardEntry> leaderboard;
+
+    int result = hamsterNet__getLeaderboard(map.c_str(), sortBy.c_str(), offset, limit, (ascending) ? 1 : 0);
+    
+    if(result == 1)
+    {
+        char* leaderboardJsonString = (char*)EM_ASM_PTR({
+            
+            // get the number of bytes we need to allocate to fit the string
+            let lengthBytes = lengthBytesUTF8(Module._leaderboardResults) + 1;
+
+            // allocate enough memory to hold the string
+            let stringOnWasmHeap = _malloc(lengthBytes);
+            
+            // copy the javascript string into the heap
+            stringToUTF8(Module._leaderboardResults, stringOnWasmHeap, lengthBytes);
+            
+            // we're done with this, remove it!
+            delete Module._leaderboardResults;
+            
+            // return the pointer
+            return stringOnWasmHeap;
+        });        
+        
+        using json = nlohmann::json;
+
+        json leaderboardJson = json::parse(leaderboardJsonString);
+
+        free(leaderboardJsonString);
+
+        for(auto &el : leaderboardJson.items())
+        {
+            // std::string color;
+            // std::string name;
+            // std::string map;
+            // int time;
+            leaderboard.push_back(LeaderboardEntry{
+                el.value().at("color"),
+                el.value().at("name"),
+                el.value().at("map"),
+                el.value().at("time"),
+            });
+        }
+
+        std::cout << "get leaderboard successful\n";
+    }
+
+    return leaderboard;
 }
