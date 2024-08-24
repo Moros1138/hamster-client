@@ -1,4 +1,8 @@
-# PGE Template Project v2.25
+# HamsterNet Reference Implementation
+
+
+
+# Built using PGE Template Project v2.25
 
 This is a template project for use with the [olcPixelGameEngine](https://github.com/OneLoneCoder/olcPixelGameEngine). It serves as a jumping off point for you to build your masterpiece application.
 
