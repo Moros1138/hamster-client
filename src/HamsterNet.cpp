@@ -244,6 +244,8 @@ std::vector<LeaderboardEntry> HamsterNet::GetLeaderboard(const std::string& map,
     
     if(result == 1)
     {
+        #ifdef __EMSCRIPTEN__
+        
         char* leaderboardJsonString = (char*)EM_ASM_PTR({
             
             // get the number of bytes we need to allocate to fit the string
@@ -281,8 +283,12 @@ std::vector<LeaderboardEntry> HamsterNet::GetLeaderboard(const std::string& map,
                 el.value().at("time"),
             });
         }
-
+        
         std::cout << "get leaderboard successful\n";
+        
+        #else
+        std::cout << "HamsterNet::GetLeaderboard is not implemented for this platform\n"
+        #endif
     }
 
     return leaderboard;
