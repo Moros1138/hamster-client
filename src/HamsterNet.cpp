@@ -1,6 +1,5 @@
 #include <HamsterNet.h>
 
-HamsterNet::HamsterNet()
 #ifdef __EMSCRIPTEN__
 
 EM_JS(int, hamsterNet__initSession, (), {
@@ -154,6 +153,8 @@ extern "C"
 #endif
 
 void HamsterNet::SetColor(const std::string& hamsterColor)
+HamsterNet::HamsterNet()
+{ }
 {
     this->hamsterColor = hamsterColor;
 }
