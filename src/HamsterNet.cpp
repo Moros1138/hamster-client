@@ -124,6 +124,46 @@ EM_JS(int, hamsterNet__finishRace, (const char* raceMap, const char* raceColor, 
     });
 });
 
+EM_JS(int, hamsterNet__getLeaderboard, (const char* map, const char* sortBy, const int offset, const int limit, const int ascending), {
+
+    return Asyncify.handleSleep(function(wakeUp) {
+        // just some rudimentary input validation
+        const params = {
+            sort: ((ascending == 1) ? "asc" : "desc"),
+            map: encodeURIComponent(UTF8ToString(map)),
+            offset: offset,
+            limit: limit,
+            sortBy: "id"
+        };
+
+        if(['id', 'color', 'map', 'time', 'created_at'].indexOf(UTF8ToString(sortBy)) !== -1)
+        {
+            params.sortBy = UTF8ToString(sortBy);
+        }
+
+        fetch(`/race?map=${params.map}&sortBy=${params.sortBy}&sort=${params.sort}&offset=${params.offset}&limit=${params.limit}`, {
+            method: 'GET',
+            credentials: 'same-origin',
+        }).then((response) =>
+        {
+            return response.ok
+            ? response.json()
+            : Promise.reject(new Error("Unexpected response"));
+        })
+        .then((message) =>
+        {
+            // set aside the results, so we can use them in the next phase.
+            Module._leaderboardResults = JSON.stringify(message.results);
+            wakeUp(1);
+        })
+        .catch((err) =>
+        {
+            console.error(err.message);
+            wakeUp(0);
+        });
+    });
+});
+
 #else
 extern "C"
 {
@@ -148,6 +188,12 @@ extern "C"
     int hamsterNet__finishRace(const char* raceMap, const char* raceColor, int raceTime)
     {
         std::cout << "hamsterNet__finishRace is not implemented on this platform, artificially succeeding.\n";
+        return 1;
+    }
+    
+    int hamsterNet__getLeaderboard(const char *map, const char *sortBy, int offset, int limit, int ascending)
+    {
+        std::cout << "hamsterNet__getLeaderboard is not implemented on this platform, artificially succeeding.\n";
         return 1;
     }
 }
