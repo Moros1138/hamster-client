@@ -24,12 +24,49 @@ EM_JS(int, hamsterNet__initSession, (), {
             })    
     });
 });
+
+EM_JS(int, hamsterNet__setRacerName, (const char* str), {
+    
+    let racerName = UTF8ToString(str);
+    
+    return Asyncify.handleSleep(function(wakeUp) {
+        fetch('/name', {
+            method: 'POST',
+            credentials: 'same-origin',
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ userName: racerName })
+        }).then((response) =>
+        {
+            return response.ok
+            ? response.json().then((data) => JSON.stringify(data, null, 2))
+            : Promise.reject(new Error("Unexpected response"));
+        })
+        .then((message) =>
+        {
+            wakeUp(1);
+        })
+        .catch((err) =>
+        {
+            console.error(err.message);
+            wakeUp(0);
+        })    
+    });
+});
+
 #else
 extern "C"
 {
     int hamsterNet__initSession()
     { 
         std::cout << "hamsterNet__initSession is not implemented on this platform, artificially succeeding.\n";
+        return 1;
+    }
+    
+    int hamsterNet__setRacerName(const char* str)
+    {
+        std::cout << "hamsterNet__setRacerName is not implemented on this platform, artificially succeeding.\n";
         return 1;
     }
 
