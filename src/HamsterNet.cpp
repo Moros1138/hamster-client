@@ -170,7 +170,12 @@ void HamsterNet::InitRace()
 
 }
 
+bool HamsterNet::StartRace(const std::string& map)
 {
+    m_map = map;
+    m_tp1 = std::chrono::system_clock::now();
+    m_tp2 = std::chrono::system_clock::now();
+    return (hamsterNet__startRace() == 1);
 }
 
 bool HamsterNet::FinishRace()
