@@ -83,6 +83,47 @@ EM_JS(int, hamsterNet__startRace, (), {
         })    
     });
 });
+EM_JS(int, hamsterNet__finishRace, (const char* raceMap, const char* raceColor, int raceTime), {
+    
+    if(Module.hamsterRaceId === undefined)
+    {
+        console.error("Trying to finish a race that never start!");
+        return 0;
+    }
+    
+    const raceData = {
+        raceId: Module.hamsterRaceId,
+        raceTime: raceTime,
+        raceMap: UTF8ToString(raceMap),
+        raceColor: UTF8ToString(raceColor),
+    };
+    
+    return Asyncify.handleSleep(function(wakeUp) {
+        fetch('/race', {
+            method: 'PATCH',
+            credentials: 'same-origin',
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(raceData)
+        }).then((response) =>
+        {
+            return response.ok
+            ? response.json().then((data) => JSON.stringify(data, null, 2))
+            : Promise.reject(new Error("Unexpected response"));
+        })
+        .then((message) =>
+        {
+            wakeUp(1);
+        })
+        .catch((err) =>
+        {
+            console.error(err.message);
+            wakeUp(0);
+        })    
+    });
+});
+
 #else
 extern "C"
 {
@@ -104,6 +145,11 @@ extern "C"
         return 1;
     }
 
+    int hamsterNet__finishRace(const char* raceMap, const char* raceColor, int raceTime)
+    {
+        std::cout << "hamsterNet__finishRace is not implemented on this platform, artificially succeeding.\n";
+        return 1;
+    }
 }
 #endif
 
