@@ -6,32 +6,31 @@
 #include <emscripten.h>
 #endif
 
+#include <chrono>
+#include <iostream>
 #include <string>
-#include <cstdint>
 
 class HamsterNet
 {
 public:
     HamsterNet();
+    
+    bool InitSession();
+    void SetColor(const std::string& color);
+    bool SetName(const std::string& name);
 
-    void SetColor(const std::string& hamsterColor);
-    void SetName(const std::string& hamsterName);
-
-    void InitRace();
-    void StopRace();
-    void FinishRace();
+    bool StartRace(const std::string& map);
+    bool FinishRace();
 
 private:
-    std::string hamsterColor;
-    std::string hamsterName;
-    std::string raceMapName;
-    uint64_t raceTime;
+    std::chrono::time_point<std::chrono::system_clock> m_tp1, m_tp2;
+
+    std::string m_color;
+    std::string m_name;
+    std::string m_map;
+    int m_time;
 
     std::string raceId;
 };
 
-
-
-
-
-#endif
+#endif // HAMSTER_NET_H
