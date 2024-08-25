@@ -125,6 +125,63 @@ EM_JS(int, hamsterNet__finishRace, (const char* raceMap, const char* raceColor, 
     });
 });
 
+EM_JS(int, hamsterNet__startPause, (), {
+    
+
+    return Asyncify.handleSleep(function(wakeUp) {
+        fetch('/pause', {
+            method: 'POST',
+            credentials: 'same-origin',
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({raceId: Module.hamsterRaceId})
+        }).then((response) =>
+        {
+            return response.ok
+            ? response.json()
+            : Promise.reject(new Error("Unexpected response"));
+        })
+        .then((message) =>
+        {
+            wakeUp(1);
+        })
+        .catch((err) =>
+        {
+            console.error(err.message);
+            wakeUp(0);
+        })    
+    });
+});
+
+EM_JS(int, hamsterNet__endPause, (), {
+    
+    return Asyncify.handleSleep(function(wakeUp) {
+        fetch('/pause', {
+            method: 'PATCH',
+            credentials: 'same-origin',
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({raceId: Module.hamsterRaceId})
+        }).then((response) =>
+        {
+            return response.ok
+            ? response.json()
+            : Promise.reject(new Error("Unexpected response"));
+        })
+        .then((message) =>
+        {
+            wakeUp(1);
+        })
+        .catch((err) =>
+        {
+            console.error(err.message);
+            wakeUp(0);
+        })    
+    });
+});
+
 EM_JS(int, hamsterNet__getLeaderboard, (const char* map, const char* sortBy, const int offset, const int limit, const int ascending), {
 
     return Asyncify.handleSleep(function(wakeUp) {
@@ -224,6 +281,8 @@ bool HamsterNet::StartRace(const std::string& map)
     m_map = map;
     m_tp1 = std::chrono::system_clock::now();
     m_tp2 = std::chrono::system_clock::now();
+    m_pause_time = 0;
+    
     return (hamsterNet__startRace() == 1);
 }
 
@@ -233,8 +292,30 @@ bool HamsterNet::FinishRace()
     std::chrono::duration<double, std::milli> duration = m_tp2 - m_tp1;
     m_time = static_cast<int>(duration.count());
 
-    return (hamsterNet__finishRace(m_map.c_str(), m_color.c_str(), m_time) == 1);
+    std::cout << "RACE TIME: " << m_pause_time << "\n";
+    std::cout << "PAUSE TIME: " << m_pause_time << "\n";
+
+    return (hamsterNet__finishRace(m_map.c_str(), m_color.c_str(), m_time - m_pause_time) == 1);
 }
+
+bool HamsterNet::StartPause()
+{
+    m_pause_tp1 = std::chrono::system_clock::now();
+    m_pause_tp2 = std::chrono::system_clock::now();
+    
+    return (hamsterNet__startPause() == 1);
+}
+
+bool HamsterNet::EndPause()
+{
+    m_pause_tp2 = std::chrono::system_clock::now();
+    std::chrono::duration<double, std::milli> duration = m_pause_tp2 - m_pause_tp1;
+    m_pause_time += static_cast<int>(duration.count());
+    
+    std::cout << "PAUSE TIME: " << m_pause_time << "\n";
+    return (hamsterNet__endPause() == 1);
+}
+
 
 std::vector<LeaderboardEntry> HamsterNet::GetLeaderboard(const std::string& map, const int offset, const int limit, const std::string& sortBy, bool ascending)
 {
@@ -287,7 +368,7 @@ std::vector<LeaderboardEntry> HamsterNet::GetLeaderboard(const std::string& map,
         std::cout << "get leaderboard successful\n";
         
         #else
-        std::cout << "HamsterNet::GetLeaderboard is not implemented for this platform\n"
+        std::cout << "HamsterNet::GetLeaderboard is not implemented for this platform\n";
         #endif
     }
 

@@ -19,6 +19,8 @@ public:
         RacerName,
         RacerColor,
         BeginRace,
+        PauseRace,
+        UnpauseRace,
         EndRace
     };
 
@@ -89,11 +91,33 @@ public:
                     if(hamsterNet.StartRace("map-123"))
                     {
                         text = "Started a race on map-123\n";
-                        state = State::EndRace;
+                        state = State::PauseRace;
                     }
                     else
                     {
                         text = "Failed to start race on map-123.\n";
+                    }
+                    break;
+                case State::PauseRace:
+                    if(hamsterNet.StartPause())
+                    {
+                        text = "Paused the race\n";
+                        state = State::UnpauseRace;
+                    }
+                    else
+                    {
+                        text = "Failed to start the pause.\n";
+                    }
+                    break;
+                case State::UnpauseRace:
+                    if(hamsterNet.EndPause())
+                    {
+                        text = "unpaused the race\n";
+                        state = State::EndRace;
+                    }
+                    else
+                    {
+                        text = "Failed to end the pause.\n";
                     }
                     break;
                 case State::EndRace:
