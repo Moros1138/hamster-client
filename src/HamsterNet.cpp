@@ -254,6 +254,18 @@ extern "C"
         std::cout << "hamsterNet__getLeaderboard is not implemented on this platform, artificially succeeding.\n";
         return 1;
     }
+
+    int hamsterNet__startPause()
+    {
+        std::cout << "hamsterNet__startPause is not implemented on this platform, artificially succeeding.\n";
+        return 1;
+    }
+
+    int hamsterNet__endPause()
+    {
+        std::cout << "hamsterNet__endPause is not implemented on this platform, artificially succeeding.\n";
+        return 1;
+    }    
 }
 #endif
 
